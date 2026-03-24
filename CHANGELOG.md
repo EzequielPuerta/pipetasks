@@ -10,3 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Initial release.
+
+## [0.1.1] - 2026-03-24
+
+### Added
+
+- License and badges added.
