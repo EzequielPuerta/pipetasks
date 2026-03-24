@@ -1,0 +1,111 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.3
+  gh: circleci/github-cli@1.0
+jobs:
+  build_test:
+    docker:
+      - image: cimg/python:3.11.7
+    steps:
+      - checkout # checkout source code to working directory
+      - run:
+          name: Install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
+      - run:
+          name: Install dependencies
+          command: |
+            mkdir test-results
+            uv sync
+      - run:
+          name: Run tests
+          command: |
+            uv run pytest --junitxml=test-results/junit.xml --cov=./ --cov-report=xml
+      - run:
+          name: Run code coverage
+          command: |
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov
+      - store_test_results:
+          path: test-results
+  build_verify:
+    docker:
+      - image: cimg/python:3.11.7
+    steps:
+      - checkout
+      - run:
+          name: Install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
+      - run:
+          name: Build package
+          command: uv build
+      - run:
+          name: Verify build artifacts
+          command: |
+            ls dist/
+            test -f dist/*.whl || (echo "Missing wheel" && exit 1)
+            test -f dist/*.tar.gz || (echo "Missing sdist" && exit 1)
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/
+  pypi_publish:
+    docker:
+      - image: cimg/python:3.11.7
+    steps:
+      - checkout # checkout source code to working directory
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install uv
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
+      - run:
+          name: Build and publish to PyPI
+          command: |
+            uv publish \
+              --username $TWINE_USERNAME \
+              --password $TWINE_PASSWORD
+  gh_release:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout # checkout source code to working directory
+      - gh/setup
+      - run:
+          name: "Creating a GitHub Release"
+          command: |
+            export GITHUB_HOSTNAME="github.com"
+            VERSION=$(grep '^version' pyproject.toml | head -1 | cut -d'"' -f2)
+            gh release create "$VERSION" \
+              --notes-file "./CHANGELOG.md" \
+              --title "pipetasks v$VERSION" \
+              --repo "$(git config --get remote.origin.url)"
+workflows:
+  build_test_publish:
+    jobs:
+      - build_test
+      - build_verify:
+          requires:
+            - build_test
+          filters:
+            branches:
+              only: [main]
+      - pypi_publish:
+          requires:
+            - build_verify
+          filters:
+            branches:
+              only: [main]
+      - gh_release:
+          requires:
+            - pypi_publish
+          context: [GITHUB_CREDENTIALS]
+          filters:
+            branches:
+              only: [main]
