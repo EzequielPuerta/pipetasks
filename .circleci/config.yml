@@ -5,7 +5,7 @@ orbs:
 jobs:
   build_test:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.10.13
     steps:
       - checkout # checkout source code to working directory
       - run:
@@ -32,7 +32,7 @@ jobs:
           path: test-results
   build_verify:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.10.13
     steps:
       - checkout
       - run:
@@ -55,7 +55,7 @@ jobs:
             - dist/
   pypi_publish:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.10.13
     steps:
       - checkout # checkout source code to working directory
       - attach_workspace:

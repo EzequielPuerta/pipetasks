@@ -22,3 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 - Pipeline names removed.
+
+## [0.1.3] - 2026-03-25
+
+### Changed
+
+- Python version downgraded to 3.10
