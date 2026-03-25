@@ -8,12 +8,6 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.common.by import By
 
-from pipetasks.scraping.pipeline import ScrapingPipeline
-
-
-def test_scraping_pipeline_initialization(scraping_pipeline):
-    assert scraping_pipeline.name == ScrapingPipeline.name
-
 
 def test_scraping_pipeline_has_timeout(scraping_pipeline):
     assert scraping_pipeline.TIMEOUT is not None and scraping_pipeline.TIMEOUT > 0

@@ -18,7 +18,6 @@ from pipetasks.pipeline import Pipeline
 
 class ScrapingPipeline(Pipeline):
     TIMEOUT = 0.5
-    name = "Scrapper"
 
     def __init__(  # type: ignore[no-untyped-def]
         self,

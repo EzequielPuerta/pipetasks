@@ -16,3 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - License and badges added.
+
+## [0.1.2] - 2026-03-25
+
+### Removed
+
+- Pipeline names removed.
