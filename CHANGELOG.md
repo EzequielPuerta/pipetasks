@@ -28,3 +28,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Python version downgraded to 3.10
+
+## [0.1.4] - 2026-03-29
+
+### Changed
+
+- Click method with retry strategy.
