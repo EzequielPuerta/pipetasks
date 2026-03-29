@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from selenium.common.exceptions import (
     NoSuchElementException,
+    StaleElementReferenceException,
     TimeoutException,
 )
 from selenium.webdriver.common.by import By
@@ -112,7 +113,88 @@ def test_scraping_pipeline_click_with_scope(scraping_pipeline):
         mock_element.click.assert_called_once()
 
 
-def test_retry_matches_first_xpath(scraping_pipeline):
+def test_scraping_pipeline_click_with_try_again(scraping_pipeline):
+    mock_element = MagicMock()
+
+    with (
+        patch.object(
+            scraping_pipeline,
+            "find_element",
+            return_value=mock_element,
+        ),
+        patch("pipetasks.scraping.pipeline.WebDriverWait") as mock_wait,
+    ):
+        mock_wait.return_value.until.side_effect = [
+            StaleElementReferenceException,
+            mock_element,
+        ]
+        scraping_pipeline.click(
+            By.ID,
+            "submit-btn",
+            retry_kwargs={
+                "stop_max_attempt_number": 3,
+                "retry_on_exception": lambda e: isinstance(
+                    e, StaleElementReferenceException
+                ),
+            },
+        )
+        assert mock_wait.return_value.until.call_count == 2
+        mock_element.click.assert_called_once()
+
+
+def test_scraping_pipeline_click_with_retry_unhandled_exception(scraping_pipeline):
+    mock_element = MagicMock()
+
+    with (
+        patch.object(
+            scraping_pipeline,
+            "find_element",
+            return_value=mock_element,
+        ),
+        patch("pipetasks.scraping.pipeline.WebDriverWait") as mock_wait,
+        pytest.raises(TimeoutException),
+    ):
+        mock_wait.return_value.until.side_effect = TimeoutException
+        scraping_pipeline.click(
+            By.ID,
+            "submit-btn",
+            retry_kwargs={
+                "stop_max_attempt_number": 3,
+                "retry_on_exception": lambda e: isinstance(
+                    e, StaleElementReferenceException
+                ),
+            },
+        )
+
+
+def test_scraping_pipeline_click_with_retry_exhausted(scraping_pipeline):
+    mock_element = MagicMock()
+
+    with (
+        patch.object(
+            scraping_pipeline,
+            "find_element",
+            return_value=mock_element,
+        ),
+        patch("pipetasks.scraping.pipeline.WebDriverWait") as mock_wait,
+        pytest.raises(StaleElementReferenceException),
+    ):
+        mock_wait.return_value.until.side_effect = StaleElementReferenceException
+        scraping_pipeline.click(
+            By.ID,
+            "submit-btn",
+            retry_kwargs={
+                "stop_max_attempt_number": 3,
+                "retry_on_exception": lambda e: isinstance(
+                    e, StaleElementReferenceException
+                ),
+            },
+        )
+
+    assert mock_wait.return_value.until.call_count == 3
+
+
+def test_find_any_element_matches_first_xpath(scraping_pipeline):
     mock_element = MagicMock()
 
     with patch.object(
@@ -120,7 +202,7 @@ def test_retry_matches_first_xpath(scraping_pipeline):
         "find_element",
         return_value=mock_element,
     ) as mock_find:
-        result = scraping_pipeline.retry(
+        result = scraping_pipeline.find_any_element_of(
             "//div[@id='a']",
             "//div[@id='b']",
         )
@@ -128,7 +210,7 @@ def test_retry_matches_first_xpath(scraping_pipeline):
         assert mock_find.call_count == 1
 
 
-def test_retry_matches_second_xpath(scraping_pipeline):
+def test_rfind_any_element_matches_second_xpath(scraping_pipeline):
     mock_element = MagicMock()
 
     with patch.object(
@@ -136,7 +218,7 @@ def test_retry_matches_second_xpath(scraping_pipeline):
         "find_element",
         side_effect=[TimeoutException, mock_element],
     ) as mock_find:
-        result = scraping_pipeline.retry(
+        result = scraping_pipeline.find_any_element_of(
             "//div[@id='a']",
             "//div[@id='b']",
         )
@@ -144,14 +226,14 @@ def test_retry_matches_second_xpath(scraping_pipeline):
         assert mock_find.call_count == 2
 
 
-def test_retry_raises_when_no_xpath_matches(scraping_pipeline):
+def test_find_any_element_raises_when_no_xpath_matches(scraping_pipeline):
     with patch.object(
         scraping_pipeline,
         "find_element",
         side_effect=TimeoutException,
     ) as mock_find:
         with pytest.raises(NoSuchElementException):
-            scraping_pipeline.retry(
+            scraping_pipeline.find_any_element_of(
                 "//div[@id='a']",
                 "//div[@id='b']",
             )

@@ -1,5 +1,7 @@
 import time
+from typing import Any
 
+from retrying import Retrying
 from selenium.common.exceptions import (
     NoSuchElementException,
     TimeoutException,
@@ -91,20 +93,27 @@ class ScrapingPipeline(Pipeline):
         value: str,
         on: WebElement | None = None,
         timeout: float | None = None,
+        retry_kwargs: dict[str, Any] | None = None,
     ) -> None:
-        wait_timeout = self.__timeout(timeout)
-        element = self.find_element(
-            by,
-            value,
-            on=on,
-            timeout=wait_timeout,
-        )
-        WebDriverWait(self.driver, wait_timeout).until(
-            EC.element_to_be_clickable(element)
-        ).click()
-        self.sleep()
+        def _do_click() -> None:
+            wait_timeout = self.__timeout(timeout)
+            element = self.find_element(
+                by,
+                value,
+                on=on,
+                timeout=wait_timeout,
+            )
+            WebDriverWait(self.driver, wait_timeout).until(
+                EC.element_to_be_clickable(element)
+            ).click()
+            self.sleep()
 
-    def retry(
+        if retry_kwargs is not None:
+            Retrying(**retry_kwargs).call(_do_click)
+        else:
+            _do_click()
+
+    def find_any_element_of(
         self,
         *xpaths: str,
         timeout: float | None = None,
