@@ -536,7 +536,7 @@ wheels = [
 
 [[package]]
 name = "pipetasks"
-version = "0.1.3"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "retrying" },

@@ -34,3 +34,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Click method with retry strategy.
+
+## [0.1.5] - 2026-04-03
+
+### Changed
+
+- Chrome webdriver's improvements.
