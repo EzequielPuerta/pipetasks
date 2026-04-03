@@ -46,3 +46,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Unused method removed.
+
+## [0.1.7] - 2026-04-03
+
+### Changed
+
+- Undetected chrome driver dependency added.

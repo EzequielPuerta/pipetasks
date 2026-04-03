@@ -6,14 +6,11 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     TimeoutException,
 )
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.webdriver import WebDriver as ChromeDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
+from undetected_chromedriver import Chrome, ChromeOptions
 
 from pipetasks.pipeline import Pipeline
 
@@ -33,39 +30,20 @@ class ScrapingPipeline(Pipeline):
     def __init_driver(
         self,
         headless: bool = True,
-    ) -> ChromeDriver:
-        chrome_options = Options()
+    ) -> Chrome:
+        chrome_options = ChromeOptions()
         if headless:
-            chrome_options.add_argument("--headless=chrome")
+            chrome_options.add_argument("--headless=new")
             chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--disable-sync")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--metrics-recording-only")
-        chrome_options.add_argument("--disable-default-apps")
         chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-        chrome_options.add_argument(
-            "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-        )
         chrome_options.add_argument("--lang=es-AR")
-        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        chrome_options.add_experimental_option("useAutomationExtension", False)
 
-        driver = ChromeDriver(
-            service=Service(ChromeDriverManager().install()),
+        return Chrome(
             options=chrome_options,
+            headless=headless,
+            use_subprocess=True,
         )
-
-        driver.execute_script("""
-        Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-        })
-        """)
-        return driver
 
     def sleep(self, seconds: float | None = None) -> None:
         secs = seconds if seconds else self.TIMEOUT
