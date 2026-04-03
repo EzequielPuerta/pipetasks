@@ -52,3 +52,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Undetected chrome driver dependency added.
+
+## [0.1.8] - 2026-04-03
+
+### Changed
+
+- Setuptools dependency added.
