@@ -150,6 +150,3 @@ class ScrapingPipeline(Pipeline):
             except TimeoutException:
                 continue
         raise NoSuchElementException("No se encontró el elemento deseado.") from None
-
-    def run(self) -> None:
-        pass

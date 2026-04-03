@@ -16,4 +16,8 @@ def scraping_pipeline(mock_driver):
     ):
         from pipetasks.scraping.pipeline import ScrapingPipeline
 
-        yield ScrapingPipeline()
+        class ConcreteScrapingPipeline(ScrapingPipeline):
+            def run(self):
+                pass
+
+        yield ConcreteScrapingPipeline()

@@ -40,3 +40,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Chrome webdriver's improvements.
+
+## [0.1.6] - 2026-04-03
+
+### Fixed
+
+- Unused method removed.
