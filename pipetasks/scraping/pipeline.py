@@ -26,6 +26,7 @@ class ScrapingPipeline(Pipeline):
         **kwargs,
     ):
         self.driver = self.__init_driver(headless=headless)
+        self._driver_closed = False
         super().__init__(*args, **kwargs)
 
     def __init_driver(
@@ -47,11 +48,16 @@ class ScrapingPipeline(Pipeline):
             version_main=self.CHROME_VERSION,
         )
 
+    def quit(self) -> None:
+        if not self._driver_closed:
+            self._driver_closed = True
+            try:
+                self.driver.quit()
+            except Exception:
+                pass
+
     def __del__(self) -> None:
-        try:
-            self.driver.quit()
-        except Exception:
-            pass
+        self.quit()
 
     def sleep(self, seconds: float | None = None) -> None:
         secs = seconds if seconds else self.TIMEOUT

@@ -17,4 +17,7 @@ def scraping_pipeline(mock_driver):
             def run(self):
                 pass
 
+            def quit(self) -> None:
+                super().quit()
+
         yield ConcreteScrapingPipeline()

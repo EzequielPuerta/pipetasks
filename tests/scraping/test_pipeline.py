@@ -245,6 +245,13 @@ def test_driver_quit_called_on_del(scraping_pipeline):
     scraping_pipeline.driver.quit.assert_called_once()
 
 
+def test_driver_quit_is_idempotent(scraping_pipeline):
+    scraping_pipeline.quit()
+    scraping_pipeline.driver.quit.assert_called_once()
+    scraping_pipeline.__del__()
+    scraping_pipeline.driver.quit.assert_called_once()
+
+
 def test_driver_quit_exception_does_not_propagate(scraping_pipeline):
     scraping_pipeline.driver.quit.side_effect = Exception("driver already dead")
     scraping_pipeline.__del__()

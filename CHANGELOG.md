@@ -70,3 +70,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Driver quit added.
+
+## [0.1.11] - 2026-04-05
+
+### Fixed
+
+- Idempotent driver quit.
