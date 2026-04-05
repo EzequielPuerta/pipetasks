@@ -64,3 +64,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Fixed version of chrome browser.
+
+## [0.1.10] - 2026-04-05
+
+### Fixed
+
+- Driver quit added.

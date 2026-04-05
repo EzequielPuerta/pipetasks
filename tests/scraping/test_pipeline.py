@@ -238,3 +238,13 @@ def test_find_any_element_raises_when_no_xpath_matches(scraping_pipeline):
                 "//div[@id='b']",
             )
         assert mock_find.call_count == 2
+
+
+def test_driver_quit_called_on_del(scraping_pipeline):
+    scraping_pipeline.__del__()
+    scraping_pipeline.driver.quit.assert_called_once()
+
+
+def test_driver_quit_exception_does_not_propagate(scraping_pipeline):
+    scraping_pipeline.driver.quit.side_effect = Exception("driver already dead")
+    scraping_pipeline.__del__()

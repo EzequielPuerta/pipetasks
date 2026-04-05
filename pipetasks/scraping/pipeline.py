@@ -47,6 +47,12 @@ class ScrapingPipeline(Pipeline):
             version_main=self.CHROME_VERSION,
         )
 
+    def __del__(self) -> None:
+        try:
+            self.driver.quit()
+        except Exception:
+            pass
+
     def sleep(self, seconds: float | None = None) -> None:
         secs = seconds if seconds else self.TIMEOUT
         time.sleep(secs)
