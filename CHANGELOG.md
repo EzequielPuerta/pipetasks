@@ -76,3 +76,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Idempotent driver quit.
+
+## [0.1.12] - 2026-04-05
+
+### Changed
+
+- Rollback from undetected chromedriver to pure selenium.
