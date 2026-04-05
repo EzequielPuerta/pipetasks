@@ -58,3 +58,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Setuptools dependency added.
+
+## [0.1.9] - 2026-04-05
+
+### Changed
+
+- Fixed version of chrome browser.

@@ -17,6 +17,7 @@ from pipetasks.pipeline import Pipeline
 
 class ScrapingPipeline(Pipeline):
     TIMEOUT = 0.5
+    CHROME_VERSION = None
 
     def __init__(  # type: ignore[no-untyped-def]
         self,
@@ -43,6 +44,7 @@ class ScrapingPipeline(Pipeline):
             options=chrome_options,
             headless=headless,
             use_subprocess=True,
+            version_main=self.CHROME_VERSION,
         )
 
     def sleep(self, seconds: float | None = None) -> None:

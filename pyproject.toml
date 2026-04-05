@@ -1,6 +1,6 @@
 [project]
 name = "pipetasks"
-version = "0.1.8"
+version = "0.1.9"
 description = "Utils to build pipelines"
 authors = [
     {name = "Armando Ezequiel Puerta", email = "armando.ezequiel.puerta@gmail.com"}
