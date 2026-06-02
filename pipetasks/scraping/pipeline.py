@@ -27,8 +27,8 @@ class ScrapingPipeline(Pipeline):
         *args,
         **kwargs,
     ):
-        self.driver = self.__init_driver(headless=headless)
         self._driver_closed = False
+        self.driver = self.__init_driver(headless=headless)
         super().__init__(*args, **kwargs)
 
     def __init_driver(
@@ -69,12 +69,15 @@ class ScrapingPipeline(Pipeline):
         return driver
 
     def quit(self) -> None:
-        if not self._driver_closed:
-            self._driver_closed = True
-            try:
-                self.driver.quit()
-            except Exception:
-                pass
+        try:
+            if not self._driver_closed:
+                self._driver_closed = True
+                try:
+                    self.driver.quit()
+                except Exception:
+                    pass
+        except AttributeError:
+            pass
 
     def __del__(self) -> None:
         self.quit()

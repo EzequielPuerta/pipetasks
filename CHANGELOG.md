@@ -82,3 +82,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Rollback from undetected chromedriver to pure selenium.
+
+## [0.1.13] - 2026-06-01
+
+### Fixed
+
+- Handling attribute error on scraping pipeline.
